@@ -14,7 +14,7 @@ client.once('ready', () => {
 client.on('messageCreate', message => {
     if(message.author.bot || message.inGuild()) return;
     message.react('👍');
-    questions.push(message);
+    messageContents.push(message);
 });
 
 function GetQuestions(){
@@ -33,7 +33,7 @@ function GetQuestions(){
                             if(!message.author.bot){
                                 let notTickReactions = 0;
                                 message.reactions.cache.forEach(reaction => {
-                                    if(reaction.emoji !== '✔'){
+                                    if(reaction.emoji.toString() !== '✔'){
                                         notTickReactions++;
                                     }
                                 });
@@ -57,12 +57,13 @@ function SendQuestion(){
         fullChannel.send(messageContents[randomId].content);
 
         messageContents[randomId].react('✔');
+        messageContents.splice(messageContents[randomId])
     });
 }
 
 setInterval(function(){
     var date = new Date();
-    if(date.getHours() === 13 && date.getMinutes() === 0){
+    if(date.getHours() === 21 && date.getMinutes() === 19){
         SendQuestion();
     }
 }, 60000);
