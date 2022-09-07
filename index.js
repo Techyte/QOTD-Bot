@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, Partials, } = require('discord.js');
-const { token } = require('./config.json');
+const { token, serverId, channelId, modId } = require('./config.json');
 
 let messageContents = []
 
@@ -13,12 +13,20 @@ client.once('ready', () => {
 
 client.on('messageCreate', message => {
     if(message.author.bot || message.inGuild()) return;
+
+    if(message.author.id === modId){
+        if(message.content.startsWith("!stop")){
+            client.destroy();
+            return;
+        }
+    }
+
     message.react('👍');
     messageContents.push(message);
 });
 
 function GetQuestions(){
-    const guild = client.guilds.cache.get('954307870869028906');
+    const guild = client.guilds.cache.get(serverId);
 
     guild.members.fetch().then(members =>
     {
@@ -52,7 +60,7 @@ function GetQuestions(){
 client.login(token);
 
 function SendQuestion(){
-    client.channels.cache.get("1015459987000147998").fetch().then(fullChannel =>{
+    client.channels.cache.get(channelId).fetch().then(fullChannel =>{
         const randomId = Math.floor(Math.random() * messageContents.length);
         fullChannel.send(messageContents[randomId].content);
 
