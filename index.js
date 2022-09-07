@@ -63,7 +63,7 @@ function SendQuestion(){
 
 setInterval(function(){
     var date = new Date();
-    if(date.getHours() === 21 && date.getMinutes() === 19){
+    if(date.getHours() === 13 && date.getMinutes() === 0){
         SendQuestion();
     }
 }, 60000);
