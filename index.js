@@ -2,6 +2,7 @@ const { Client, GatewayIntentBits, Partials, } = require('discord.js');
 const { token, serverId, channelId, modId } = require('./config.json');
 
 let messageContents = []
+let messageContentsIndex = [];
 
 const client = new Client({partials: [Partials.Channel, Partials.Message], intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessageReactions] });
 
@@ -23,7 +24,19 @@ client.on('messageCreate', message => {
 
     message.react('👍');
     messageContents.push(message);
+    messageContentsIndex.push(message.id);
 });
+
+client.on('messageDelete', message => {
+    if(message.author.bot || message.inGuild()) return;
+
+    for (let i = 0; i < messageContentsIndex.length; i++){
+        if (messageContentsIndex[i] === message.id){
+            messageContents.splice(i);
+            console.log('Someone deleted a message')
+        }
+    }
+})
 
 function GetQuestions(){
     const guild = client.guilds.cache.get(serverId);
@@ -45,8 +58,9 @@ function GetQuestions(){
                                         notTickReactions++;
                                     }
                                 });
-                                if(notTickReactions===message.reactions.cache.size){
+                                if(notTickReactions===message.reactions.cache.size && message.reactions.cache.size === 0){
                                     messageContents.push(message);
+                                    messageContentsIndex.push(message.id);
                                 }
                             }
                         })
@@ -62,16 +76,20 @@ client.login(token);
 function SendQuestion(){
     client.channels.cache.get(channelId).fetch().then(fullChannel =>{
         const randomId = Math.floor(Math.random() * messageContents.length);
+
         fullChannel.send(messageContents[randomId].content);
 
+        messageContents[randomId].reply("This question was asked! See it here: " + fullChannel.url);
+
         messageContents[randomId].react('✔');
-        messageContents.splice(messageContents[randomId])
+        messageContentsIndex.splice(randomId)
+        messageContents.splice(randomId)
     });
 }
 
-setInterval(function(){
-    var date = new Date();
-    if(date.getHours() === 13 && date.getMinutes() === 0){
+setInterval(function() {
+    let date = new Date();
+    if(date.getHours() === 12 && date.getMinutes() === 0){
         SendQuestion();
     }
 }, 60000);
