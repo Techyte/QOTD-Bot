@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "wqL8QXSeajQ5VErcbPWU6Bz6LZrv7+WXDpi74w8NQYkbKeMUEFve8/o5kXlNPnWA5wg5cAvNYn/FkBhQGIqdeQ==",
+  "dgSpecHash": "RVujOB+gry8JSbSR5b8q4aAm4xsj0/qwGEfLLbO76WSXUKPMwXxm+KgwBTqNELEum/Tku0tQVvTWxGaiGGcG6Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot\\QOTD-Bot.csproj",
+  "projectFilePath": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Mr. Monster\\.nuget\\packages\\concurrenthashset\\1.1.0\\concurrenthashset.1.1.0.nupkg.sha512",
     "C:\\Users\\Mr. Monster\\.nuget\\packages\\dsharpplus\\4.2.0\\dsharpplus.4.2.0.nupkg.sha512",

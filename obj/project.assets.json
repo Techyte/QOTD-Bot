@@ -4419,11 +4419,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot\\QOTD-Bot.csproj",
+      "projectUniqueName": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot.csproj",
       "projectName": "QOTD-Bot",
-      "projectPath": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot\\QOTD-Bot.csproj",
+      "projectPath": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot.csproj",
       "packagesPath": "C:\\Users\\Mr. Monster\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\QOTD-Bot\\obj\\",
+      "outputPath": "C:\\Users\\Mr. Monster\\Documents\\Coding\\QOTD-Bot\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Mr. Monster\\AppData\\Roaming\\NuGet\\NuGet.Config",
