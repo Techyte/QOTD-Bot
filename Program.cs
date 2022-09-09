@@ -1,14 +1,24 @@
-﻿using DSharpPlus;
+﻿using System.Text.Json;
+using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 
 namespace QOTD_Bot
 {
     class Program
     {
-        private static List<DiscordMessage> possibleQuestions;
+        private static ConfigData configData;
+        
+        private static Dictionary<ulong, DiscordMessage> possibleQuestions;
 
         static void Main()
         {
+            configData = new ConfigData();
+            
+            configData.Token = Environment.GetEnvironmentVariable("token");
+            configData.ChannelId = ulong.Parse(Environment.GetEnvironmentVariable("channelId"));
+            configData.GuildId = ulong.Parse(Environment.GetEnvironmentVariable("guildId"));
+            
             MainAsync().GetAwaiter().GetResult();
         }
 
@@ -16,7 +26,7 @@ namespace QOTD_Bot
         {
             var discord = new DiscordClient(new DiscordConfiguration()
             {
-                Token = "MTAxNTQ2MjIwNDAwNDM4ODk2NQ.GTaIfF.shNacwrKs0DNUaEOVCido_z22Qa4fr0zhl929M",
+                Token = configData.Token,
                 TokenType = TokenType.Bot
             });
 
@@ -24,15 +34,18 @@ namespace QOTD_Bot
             {
                 if (e.Channel.Type == ChannelType.Private)
                 {
-                    possibleQuestions.Add(e.Message);
+                    possibleQuestions.Add(e.Message.Id, e.Message);
                 }
 
             };
 
             discord.MessageDeleted += async (s, e) =>
             {
-                possibleQuestions.Remove(e.Message);
+                Console.WriteLine("Ready");
+                possibleQuestions.Remove(e.Message.Id);
             };
+
+            discord.GuildDownloadCompleted += GetQuestions;
             
             var aTimer = new System.Timers.Timer(60000);
             aTimer.Elapsed += (o, i) =>
@@ -42,29 +55,24 @@ namespace QOTD_Bot
                 
                 if (time.Hour == 12 && time.Minute == 0)
                 {
-                    if(discord.Guilds.TryGetValue(954307870869028906, out DiscordGuild guild))
+                    Console.WriteLine("Its time");
+                    if(discord.Guilds.TryGetValue(configData.GuildId, out DiscordGuild guild))
                     {
-                        if(guild.Channels.TryGetValue(1015459987000147998, out DiscordChannel channel))
+                        if(guild.Channels.TryGetValue(configData.ChannelId, out DiscordChannel channel))
                         {
                             Random random = new Random();
 
-                            DiscordMessage message = possibleQuestions[random.Next(0, possibleQuestions.Count)];
+                            DiscordMessage message;
+                            possibleQuestions.TryGetValue((ulong)random.Next(0, possibleQuestions.Count), out message);
                             
-                            channel.SendMessageAsync(message.Content);
-                            
-                            message.RespondAsync("This question was asked! Check it out here: https://discord.com/channels/954307870869028906/1015459987000147998");
+                            DiscordMessage questionMessage = channel.SendMessageAsync(message.Content).GetAwaiter().GetResult();
+
+                            message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
+                            message.RespondAsync($"This question was asked! Check it out here: {questionMessage.JumpLink}");
                         }
                     }
                 }
             };
-            
-            if(discord.Guilds.TryGetValue(954307870869028906, out DiscordGuild guild))
-            {
-                foreach (var member in guild.Members)
-                {
-                    await member.Value.CreateDmChannelAsync();
-                }
-            }
             
             aTimer.AutoReset = true;
             
@@ -73,6 +81,55 @@ namespace QOTD_Bot
             await discord.ConnectAsync();
             
             await Task.Delay(-1);
+        }
+
+        private static Task GetQuestions(DiscordClient discord, GuildDownloadCompletedEventArgs e)
+        {
+            Console.WriteLine("Checking for previously send questions");
+            if(discord.Guilds.TryGetValue(configData.GuildId, out DiscordGuild guild))
+            {
+                foreach (DiscordMember member in guild.GetAllMembersAsync().GetAwaiter().GetResult())
+                {
+                    DiscordChannel channel = member.CreateDmChannelAsync().GetAwaiter().GetResult();
+                    foreach (DiscordMessage message in channel.GetMessagesAsync(100).GetAwaiter().GetResult())
+                    {
+                        if (!message.Author.IsBot)
+                        {
+                            int reactions = 0;
+                            foreach (DiscordReaction reaction in message.Reactions)
+                            {
+                                if (reaction.Emoji.ToString() == "👍")
+                                {
+                                    reactions++;
+                                }
+                            }
+
+                            if (reactions == message.Reactions.Count)
+                            {
+                                possibleQuestions.Add(message.Id, message);
+                                Console.WriteLine("Found a question");
+                            }
+                        }
+                    }
+                }
+            }
+            
+            throw new NotImplementedException();
+        }
+    }
+
+    [Serializable]
+    class ConfigData
+    {
+        public string Token;
+        public ulong GuildId;
+        public ulong ChannelId;
+
+        public ConfigData()
+        {
+            Token = "";
+            GuildId = 0;
+            ChannelId = 0;
         }
     }
 }
