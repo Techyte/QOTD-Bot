@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
@@ -14,6 +13,7 @@ namespace QOTD_Bot
         static void Main()
         {
             configData = new ConfigData();
+            possibleQuestions = new Dictionary<ulong, DiscordMessage>();
             
             configData.Token = Environment.GetEnvironmentVariable("token");
             configData.ChannelId = ulong.Parse(Environment.GetEnvironmentVariable("channelId"));
@@ -34,9 +34,9 @@ namespace QOTD_Bot
             {
                 if (e.Channel.Type == ChannelType.Private)
                 {
+                    e.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👍"));
                     possibleQuestions.Add(e.Message.Id, e.Message);
                 }
-
             };
 
             discord.MessageDeleted += async (s, e) =>
@@ -53,17 +53,21 @@ namespace QOTD_Bot
                 Console.WriteLine("Checking");
                 DateTime time = DateTime.Now;
                 
-                if (time.Hour == 12 && time.Minute == 0)
+                if (time.Hour == 12 && time.Minute == 00)
                 {
                     Console.WriteLine("Its time");
                     if(discord.Guilds.TryGetValue(configData.GuildId, out DiscordGuild guild))
                     {
                         if(guild.Channels.TryGetValue(configData.ChannelId, out DiscordChannel channel))
                         {
+                            Console.WriteLine("Sending a message!");
                             Random random = new Random();
 
+                            int randomId = random.Next(0, possibleQuestions.Count);
+                            List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
+                            
                             DiscordMessage message;
-                            possibleQuestions.TryGetValue((ulong)random.Next(0, possibleQuestions.Count), out message);
+                            possibleQuestions.TryGetValue(IdList[randomId], out message);
                             
                             DiscordMessage questionMessage = channel.SendMessageAsync(message.Content).GetAwaiter().GetResult();
 
@@ -83,38 +87,40 @@ namespace QOTD_Bot
             await Task.Delay(-1);
         }
 
-        private static Task GetQuestions(DiscordClient discord, GuildDownloadCompletedEventArgs e)
+        private async static Task GetQuestions(DiscordClient discord, GuildDownloadCompletedEventArgs e)
         {
             Console.WriteLine("Checking for previously send questions");
             if(discord.Guilds.TryGetValue(configData.GuildId, out DiscordGuild guild))
             {
                 foreach (DiscordMember member in guild.GetAllMembersAsync().GetAwaiter().GetResult())
                 {
-                    DiscordChannel channel = member.CreateDmChannelAsync().GetAwaiter().GetResult();
-                    foreach (DiscordMessage message in channel.GetMessagesAsync(100).GetAwaiter().GetResult())
+                    if (!member.IsBot)
                     {
-                        if (!message.Author.IsBot)
+                        DiscordChannel channel = member.CreateDmChannelAsync().GetAwaiter().GetResult();
+                        foreach (DiscordMessage message in channel.GetMessagesAsync().GetAwaiter().GetResult())
                         {
-                            int reactions = 0;
-                            foreach (DiscordReaction reaction in message.Reactions)
+                            if (!message.Author.IsBot)
                             {
-                                if (reaction.Emoji.ToString() == "👍")
+                                int reactions = 0;
+                                foreach (DiscordReaction reaction in message.Reactions)
                                 {
-                                    reactions++;
+                                    if (reaction.Emoji.ToString() == "👍")
+                                    {
+                                        reactions++;
+                                    }
+                                }
+
+                                if (reactions == message.Reactions.Count)
+                                {
+                                    possibleQuestions.Add(message.Id, message);
+                                    Console.WriteLine("Found a question");
                                 }
                             }
-
-                            if (reactions == message.Reactions.Count)
-                            {
-                                possibleQuestions.Add(message.Id, message);
-                                Console.WriteLine("Found a question");
-                            }
-                        }
+                        }   
                     }
                 }
             }
-            
-            throw new NotImplementedException();
+            Console.WriteLine("Finished looking for questions");
         }
     }
 
