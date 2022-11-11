@@ -1,7 +1,11 @@
 # QOTD Discord Bot
  
- Discontinued Question Of The Day bot.
- 
-Intended to be used simply as a way to automate away the task of manualy asking a question each day it became a nightmear project thar involved many sleepless nights, breakdowns and rubber ducking to an extreme level. In a way I am glad it happened now and with such a small project as it has taught me what NOT to do during a project. The difficulty did not come with programming or motivation, it simply came from the greed of a corparation that refused to offer a soloution. Azure hosting is a great tool, however it is not,and I now know this now, good for everything. In conclusion. The code for this project is free and open source (see LICENCE for more details). Feel free to take what you will from this passage and I wish you well, dear reader, in all your future indevours.
+Wrote a whole nice README and it got deleted so here is the jist of it:
 
-Ps - there are probably many spelling errors in this however the github readme editor does now allow me to see them. Bye.
+- Use this howver you want (See LICENCE for more details)
+- You DM the bot to give it a question
+- Delete a message to remove it from the bots list of questions
+- You need to set up environment variables such as the bot token, server id, channel id and the time you want the questions to be asked for the defult code (just look up how to set environment variables)
+- You will need a discord application to use this, set one up here: https://discord.com/developers/applications
+- I don't provide a way of hosting but if you want a suggestion I am using AWS EC2 Windows 10 Instance
+- If you care enough I am using DSharpPlus to make this (the dlls should be included with the source code)
