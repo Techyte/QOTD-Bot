@@ -19,12 +19,13 @@ namespace QOTD_Bot
             configData.Token = Environment.GetEnvironmentVariable("token");
             configData.ChannelId = ulong.Parse(Environment.GetEnvironmentVariable("channelId"));
             configData.GuildId = ulong.Parse(Environment.GetEnvironmentVariable("guildId"));
-            configData.hour = int.Parse(Environment.GetEnvironmentVariable("hour"));
+            configData.Hour = int.Parse(Environment.GetEnvironmentVariable("hour"));
+            configData.Minute = int.Parse(Environment.GetEnvironmentVariable("minute"));
             
-            Console.WriteLine($"Bot Token: {configData.Token}");
-            Console.WriteLine($"Id of the Server: {configData.GuildId}");
-            Console.WriteLine($"Id of the Channel: {configData.ChannelId}");
-            Console.WriteLine($"Question will be asked at {configData.hour} o'clock");
+            Console.WriteLine($"Bot Token: {configData.Token}.");
+            Console.WriteLine($"Id of the Server: {configData.GuildId}.");
+            Console.WriteLine($"Id of the Channel: {configData.ChannelId}.");
+            Console.WriteLine($"Question will be asked at {configData.Hour}:{configData.Minute} o'clock.");
             
             MainAsync().GetAwaiter().GetResult();
         }
@@ -69,7 +70,53 @@ namespace QOTD_Bot
             
             await discord.ConnectAsync();
             
-            await Task.Delay(-1);
+            CommandCycle();
+        }
+
+        private static void CommandCycle()
+        {
+            string msg = Console.ReadLine();
+
+            string[] messageContent = msg.Split(" ", 2);
+            
+            TestCommand(messageContent[0], messageContent[1]);
+            
+            CommandCycle();
+        }
+
+        private static void TestCommand(string command, string content)
+        {
+            switch (command)
+            {
+                case "cut":
+                    RemoveQuestion(content);
+                    break;
+            }
+        }
+
+        private static void RemoveQuestion(string questionContent)
+        {
+            DiscordMessage message = null;
+            
+            foreach (var question in possibleQuestions.Values)
+            {
+                if (question.Content == questionContent)
+                {
+                    message = question;
+                }
+            }
+
+            if (message != null)
+            {
+                Console.WriteLine($"Removing the question sent by {message.Author.Username}: '{message.Content}'");
+                message.RespondAsync("This question was removed by a moderator because it was deemed to be to inappropriate or not haha funny");
+                message.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
+                possibleQuestions.Remove(message.Id);
+            }
+            else
+            {
+                Console.WriteLine($"Could not remove the question '{questionContent}' because it could not be found");
+            }
         }
 
         // Run when a question is deleted in a DM
@@ -78,7 +125,7 @@ namespace QOTD_Bot
             if (!e.Message.Author.IsBot)
             {
                 possibleQuestions.Remove(e.Message.Id);
-                Console.WriteLine($"Question from {e.Message.Author} removed: {e.Message.Content}");   
+                Console.WriteLine($"Question from {e.Message.Author} removed: {e.Message.Content}.");
             }
         }
 
@@ -97,8 +144,8 @@ namespace QOTD_Bot
         private static void CheckIfTime(DiscordClient discord)
         {
             DateTime time = DateTime.Now;
-                
-            if (time.Hour == configData.hour && time.Minute == 00 && time.ToString("t") == "A")
+            
+            if (time.Hour == configData.Hour && time.Minute == configData.Minute)
             {
                 AskQuestion(discord);
             }
@@ -131,7 +178,7 @@ namespace QOTD_Bot
         // Gets the questions that were already given to the bot before it was turned on
         private async static Task GetQuestions(DiscordClient discord, GuildDownloadCompletedEventArgs e)
         {
-            Console.WriteLine("Started checking for messages this may take some time depending on the number of members in your server");
+            Console.WriteLine("Started checking for messages, this may take some time depending on the number of members in your server.");
             
             if(discord.Guilds.TryGetValue(configData.GuildId, out DiscordGuild guild))
             {
@@ -167,7 +214,7 @@ namespace QOTD_Bot
                 }
             }
             
-            Console.WriteLine("Finished checking for messages");
+            Console.WriteLine("Finished checking for messages.");
         }
     }
 
@@ -177,14 +224,16 @@ namespace QOTD_Bot
         public string Token;
         public ulong GuildId;
         public ulong ChannelId;
-        public int hour;
+        public int Hour;
+        public int Minute;
 
         public ConfigData()
         {
             Token = "";
             GuildId = 0;
             ChannelId = 0;
-            hour = 0;
+            Hour = 0;
+            Minute = 0;
         }
     }
 }
