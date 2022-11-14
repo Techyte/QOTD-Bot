@@ -1,5 +1,4 @@
-﻿using System.Timers;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
@@ -10,6 +9,9 @@ namespace QOTD_Bot
         private static ConfigData configData;
         
         private static Dictionary<ulong, DiscordMessage> possibleQuestions;
+
+        private static bool wasForcesSpec;
+        private static string? forcedMessage;
 
         static void Main()
         {
@@ -77,9 +79,19 @@ namespace QOTD_Bot
         {
             string msg = Console.ReadLine();
 
-            string[] messageContent = msg.Split(" ", 2);
-            
-            TestCommand(messageContent[0], messageContent[1]);
+            if (msg != null)
+            {
+                string[] messageContent = msg.Split(" ", 2);
+
+                if (messageContent.Length != 1)
+                {
+                    TestCommand(messageContent[0], messageContent[1]);   
+                }
+                else
+                {
+                    TestCommand(messageContent[0], string.Empty);
+                }
+            }
             
             CommandCycle();
         }
@@ -88,10 +100,84 @@ namespace QOTD_Bot
         {
             switch (command)
             {
-                case "cut":
+                case "-cut":
                     RemoveQuestion(content);
                     break;
+                case "-forcegen":
+                    ForceGeneric(content);
+                    break;
+                case "-forcespec":
+                    ForceSpecific(content);
+                    break;
+                case "-clearforce":
+                    ClearForced();
+                    break;
+                case "-timedebug":
+                    TimeDebug();
+                    break;
             }
+        }
+
+        private static void TimeDebug()
+        {
+            Console.WriteLine($"Target Hour: {configData.Hour}. Current Hour: {DateTime.Now.Hour}");
+            Console.WriteLine($"Target Minute: {configData.Minute}. Current Minute: {DateTime.Now.Minute}");
+        }
+
+        private static void SendForceChangedMessage()
+        {
+            if (possibleQuestions.TryGetValue(ulong.Parse(forcedMessage), out DiscordMessage message))
+            {
+                message.RespondAsync("This will no longer be the next forced question");
+            }
+        }
+
+        private static void ForceGeneric(string forcedGenericMessage)
+        {
+            if (wasForcesSpec)
+            {
+                SendForceChangedMessage();
+            }
+            wasForcesSpec = false;
+            
+            forcedMessage = $"a {forcedGenericMessage}";
+            Console.WriteLine($"Forced the next question to: {forcedGenericMessage}");
+        }
+
+        private static void ForceSpecific(string forcedSpecificMessage)
+        {
+            DiscordMessage finalForcedMessage = null;
+            
+            foreach (DiscordMessage message in possibleQuestions.Values)
+            {
+                if (message.Content == forcedSpecificMessage)
+                {
+                    finalForcedMessage = message;
+                }
+            }
+
+            if (finalForcedMessage != null)
+            {
+                forcedMessage = finalForcedMessage.Id.ToString();
+                wasForcesSpec = true;
+                finalForcedMessage.RespondAsync("This question was forced to be the next Question. If you do not wish this to be the case please contact the administrator of this Bot");
+                Console.WriteLine($"Forced the next question to: {forcedSpecificMessage}");
+            }
+            else
+            {
+                Console.WriteLine($"Could not find a message with the content: {forcedSpecificMessage}");
+            }
+        }
+
+        private static void ClearForced()
+        {
+            if (wasForcesSpec)
+            {
+                SendForceChangedMessage();
+            }
+            wasForcesSpec = false;
+            
+            forcedMessage = null;
         }
 
         private static void RemoveQuestion(string questionContent)
@@ -158,19 +244,51 @@ namespace QOTD_Bot
             {
                 if(guild.Channels.TryGetValue(configData.ChannelId, out DiscordChannel channel))
                 {
-                    Random random = new Random();
+                    if (forcedMessage == null)
+                    {
+                        Random random = new Random();
 
-                    int randomId = random.Next(0, possibleQuestions.Count);
-                    List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
+                        int randomId = random.Next(0, possibleQuestions.Count);
+                        List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
                             
-                    DiscordMessage message;
-                    possibleQuestions.TryGetValue(IdList[randomId], out message);
-                            
-                    DiscordMessage questionMessage = channel.SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter().GetResult();
+                        DiscordMessage message;
+                        if(possibleQuestions.TryGetValue(IdList[randomId], out message))
+                        {
+                            DiscordMessage questionMessage = channel.SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter().GetResult();
 
-                    message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
-                    message.RespondAsync($"This question was asked! Check it out here: {questionMessage.JumpLink}");
-                    Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
+                            message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
+                            message.RespondAsync($"This question was asked! Check it out here: {questionMessage.JumpLink}");
+                            Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
+                            possibleQuestions.Remove(IdList[randomId]);
+                        }
+                    }
+                    else
+                    {
+                        string[] testForSpec = forcedMessage.Split(" ", 2);
+
+                        if (testForSpec.Length == 1)
+                        {
+                            List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
+                            
+                            DiscordMessage message;
+                            if (possibleQuestions.TryGetValue(IdList[int.Parse(forcedMessage)], out message))
+                            {
+                                DiscordMessage questionMessage = channel.SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter().GetResult();
+
+                                message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
+                                message.RespondAsync($"This question was asked! Check it out here: {questionMessage.JumpLink}");
+                                Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
+                                possibleQuestions.Remove(IdList[int.Parse(forcedMessage)]);   
+                            }
+                        }
+                        else
+                        {
+                            DiscordMessage questionMessage = channel.SendMessageAsync($"Question of the day is: {testForSpec[1]}").GetAwaiter().GetResult();
+                            Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
+                        }
+                        
+                        forcedMessage = null;
+                    }
                 }
             }
         }
