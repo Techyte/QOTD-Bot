@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QOTD-Bot", "QOTD-Bot.csproj", "{720AD031-1D00-4A0F-805F-ABB400EABE19}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QOTD-Bot", "QOTD-Bot.csproj", "{720AD031-1D00-4A0F-805F-ABB400EABE19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QOTD.UnitTests", "..\QOTD.UnitTests\QOTD.UnitTests.csproj", "{DD36628C-69CB-4FC5-B228-32A347FB1CD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,15 @@ Global
 		{720AD031-1D00-4A0F-805F-ABB400EABE19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{720AD031-1D00-4A0F-805F-ABB400EABE19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{720AD031-1D00-4A0F-805F-ABB400EABE19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD36628C-69CB-4FC5-B228-32A347FB1CD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD36628C-69CB-4FC5-B228-32A347FB1CD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD36628C-69CB-4FC5-B228-32A347FB1CD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD36628C-69CB-4FC5-B228-32A347FB1CD3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {765A7D5C-3680-4F99-B049-FF61140EBE8F}
 	EndGlobalSection
 EndGlobal
