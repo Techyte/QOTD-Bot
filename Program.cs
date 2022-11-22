@@ -24,7 +24,9 @@ namespace QOTD_Bot
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
-            configData = deserializer.Deserialize<ConfigData>(File.ReadAllText("config.yaml"));
+            string path = Environment.GetEnvironmentVariable("QOTD-Config-Location");
+
+            configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
             
             /*
             configData.Token = Environment.GetEnvironmentVariable("token");

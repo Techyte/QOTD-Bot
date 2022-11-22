@@ -30,3 +30,5 @@ C:\Users\Mr. Monster\Documents\Coding\QOTD-Bot\obj\Release\net6.0\refint\QOTD-Bo
 C:\Users\Mr. Monster\Documents\Coding\QOTD-Bot\obj\Release\net6.0\QOTD-Bot.pdb
 C:\Users\Mr. Monster\Documents\Coding\QOTD-Bot\obj\Release\net6.0\QOTD-Bot.genruntimeconfig.cache
 C:\Users\Mr. Monster\Documents\Coding\QOTD-Bot\obj\Release\net6.0\ref\QOTD-Bot.dll
+C:\Users\Mr. Monster\Documents\Coding\QOTD-Bot\bin\Release\net6.0\VisualStudio.AutomationUtilities.dll
+C:\Users\Mr. Monster\Documents\Coding\QOTD-Bot\bin\Release\net6.0\YamlDotNet.dll

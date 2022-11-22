@@ -71,16 +71,39 @@ public class CommandsManager
                 SendModMessage(content);
                 break;
             case "-readout":
-                ReadoutQuestions();
+                if (string.IsNullOrEmpty(content))
+                {
+                    ReadoutQuestions();   
+                }
+                else
+                {
+                    ReadoutQuestions(content);
+                }
+                break;
+            case "-clear":
+                Console.Clear();
                 break;
         }
     }
 
     private void ReadoutQuestions()
     {
+        Console.WriteLine("All questions:");
         foreach (var question in _questionManager.possibleQuestions.Values)
         {
             Console.WriteLine($"Question from {question.Author.Username}: {question.Content}");
+        }
+    }
+
+    private void ReadoutQuestions(string author)
+    {
+        Console.WriteLine($"All questions from {author}:");
+        foreach (var question in _questionManager.possibleQuestions.Values)
+        {
+            if (question.Author.Username == author)
+            {
+                Console.WriteLine($"Question from {question.Author.Username}: {question.Content}");   
+            }
         }
     }
 
@@ -92,13 +115,23 @@ public class CommandsManager
             if (guild.Channels.TryGetValue(_program.configData.ModChannelId,
                     out DiscordChannel channel))
             {
+                Console.WriteLine($"Sending mod message: {message}");
                 channel.SendMessageAsync(message);
             }
+            else
+            {
+                Console.WriteLine("Could not find the channe;");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Could not find the server");
         }
     }
 
     private void Stop()
     {
+        Console.WriteLine("Stopping");
         needToStop = true;
     }
 
@@ -158,6 +191,7 @@ public class CommandsManager
 
     private void ClearForced()
     {
+        Console.WriteLine("Cleared the forced question");
         if (_questionManager.wasForcesSpec)
         {
             SendForceChangedMessage();
