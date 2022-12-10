@@ -16,8 +16,8 @@ List of current commands:
 
 - '-cut', removes a question based with the same content as the text you give it, notifys the person that asked the question
 - '-quietcut', same as -cut but does not notify the person that asked the question
-- 'forcegen', forces the next question to be the text you give it
-- 'forcespec', forces the next question to be a with the same content as the text you give it, notifys the person that asked the question
+- '-forcegen', forces the next question to be the text you give it
+- '-forcespec', forces the next question to be a with the same content as the text you give it, notifys the person that asked the question
 - '-clearforce', clears forced question and uses a regular random question
 - '-timedebug', prints out the target time to ask the question and the current time
 - '-stop', stops the program and turns off the bot
