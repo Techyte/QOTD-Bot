@@ -83,7 +83,26 @@ public class CommandsManager
             case "-clear":
                 Console.Clear();
                 break;
+            case "-changeTimeHour":
+                ChangeTimeHour(int.Parse(content));
+                break;
+            case "-changeTimeMinute":
+                ChangeTimeMinute(int.Parse(content));
+                break;
+            case "-askQuestion":
+                _questionManager.ForceAskQuestion();
+                break;
         }
+    }
+
+    private void ChangeTimeHour(int newHour)
+    {
+        _program.configData.Hour = newHour;
+    }
+
+    private void ChangeTimeMinute(int newMinute)
+    {
+        _program.configData.Minute = newMinute;
     }
 
     private void ReadoutQuestions()
@@ -102,7 +121,7 @@ public class CommandsManager
         {
             if (question.Author.Username == author)
             {
-                Console.WriteLine($"Question from {question.Author.Username}: {question.Content}");   
+                Console.WriteLine($"Question: {question.Content}");   
             }
         }
     }

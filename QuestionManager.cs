@@ -94,6 +94,11 @@ public class QuestionManager
         }
     }
 
+    public void ForceAskQuestion()
+    {
+        AskQuestion(_program.discord);
+    }
+    
     // Asks the question
     private void AskQuestion(DiscordClient discord)
     {
