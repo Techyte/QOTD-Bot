@@ -1,4 +1,6 @@
-﻿namespace QOTD_Bot;
+﻿using YamlDotNet.Serialization.NamingConventions;
+
+namespace QOTD_Bot;
 
 using DSharpPlus.Entities;
 
@@ -92,7 +94,20 @@ public class CommandsManager
             case "-askQuestion":
                 _questionManager.ForceAskQuestion();
                 break;
+            case "-resetTme":
+                break;
         }
+    }
+
+    private void ResetTime()
+    {
+        var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        string path = Environment.GetEnvironmentVariable("QOTD-Config-Location");
+
+        _program.configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
     }
 
     private void ChangeTimeHour(int newHour)

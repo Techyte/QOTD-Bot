@@ -13,6 +13,8 @@ public class QuestionManager
     public bool wasForcesSpec;
     public string? forcedMessage;
 
+    private bool hasAsked;
+    
     public QuestionManager(Program program)
     {
         possibleQuestions = new Dictionary<ulong, DiscordMessage>();
@@ -97,46 +99,34 @@ public class QuestionManager
     public void ForceAskQuestion()
     {
         AskQuestion(_program.discord);
+        hasAsked = true;
     }
     
     // Asks the question
     private void AskQuestion(DiscordClient discord)
     {
-        if (discord.Guilds.TryGetValue(_program.configData.GuildId, out DiscordGuild guild))
+        if(!hasAsked)
         {
-            if (guild.Channels.TryGetValue(_program.configData.ChannelId, out DiscordChannel channel))
+
+            if (discord.Guilds.TryGetValue(_program.configData.GuildId, out DiscordGuild guild))
             {
-                if (forcedMessage == null)
+                if (guild.Channels.TryGetValue(_program.configData.ChannelId, out DiscordChannel channel))
                 {
-                    Random random = new Random();
-
-                    int randomId = random.Next(0, possibleQuestions.Count);
-                    List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
-
-                    DiscordMessage message;
-                    if (possibleQuestions.TryGetValue(IdList[randomId], out message))
+                    if (possibleQuestions.Count == 0)
                     {
-                        DiscordMessage questionMessage = channel
-                            .SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter()
-                            .GetResult();
-
-                        message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
-                        message.RespondAsync(
-                            $"This question was asked! Check it out here: {questionMessage.JumpLink}");
-                        Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
-                        possibleQuestions.Remove(IdList[randomId]);
+                        channel.SendMessageAsync("There are no questions to be asked");
+                        return;
                     }
-                }
-                else
-                {
-                    string[] testForSpec = forcedMessage.Split(" ", 2);
-
-                    if (testForSpec.Length == 1)
+                    
+                    if (forcedMessage == null)
                     {
+                        Random random = new Random();
+
+                        int randomId = random.Next(0, possibleQuestions.Count);
                         List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
 
                         DiscordMessage message;
-                        if (possibleQuestions.TryGetValue(IdList[int.Parse(forcedMessage)], out message))
+                        if (possibleQuestions.TryGetValue(IdList[randomId], out message))
                         {
                             DiscordMessage questionMessage = channel
                                 .SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter()
@@ -145,21 +135,48 @@ public class QuestionManager
                             message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
                             message.RespondAsync(
                                 $"This question was asked! Check it out here: {questionMessage.JumpLink}");
-                            Console.WriteLine(
-                                $"A question was asked! Question content: {questionMessage.Content}.");
-                            possibleQuestions.Remove(IdList[int.Parse(forcedMessage)]);
+                            Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
+                            possibleQuestions.Remove(IdList[randomId]);
                         }
                     }
                     else
                     {
-                        DiscordMessage questionMessage = channel
-                            .SendMessageAsync($"Question of the day is: {testForSpec[1]}").GetAwaiter().GetResult();
-                        Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
-                    }
+                        string[] testForSpec = forcedMessage.Split(" ", 2);
 
-                    forcedMessage = null;
+                        if (testForSpec.Length == 1)
+                        {
+                            List<ulong> IdList = new List<ulong>(possibleQuestions.Keys);
+
+                            DiscordMessage message;
+                            if (possibleQuestions.TryGetValue(IdList[int.Parse(forcedMessage)], out message))
+                            {
+                                DiscordMessage questionMessage = channel
+                                    .SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter()
+                                    .GetResult();
+
+                                message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));
+                                message.RespondAsync(
+                                    $"This question was asked! Check it out here: {questionMessage.JumpLink}");
+                                Console.WriteLine(
+                                    $"A question was asked! Question content: {questionMessage.Content}.");
+                                possibleQuestions.Remove(IdList[int.Parse(forcedMessage)]);
+                            }
+                        }
+                        else
+                        {
+                            DiscordMessage questionMessage = channel
+                                .SendMessageAsync($"Question of the day is: {testForSpec[1]}").GetAwaiter().GetResult();
+                            Console.WriteLine($"A question was asked! Question content: {questionMessage.Content}.");
+                        }
+
+                        forcedMessage = null;
+                    }
                 }
             }
+        }
+        else
+        {
+            hasAsked = false;
         }
     }
 

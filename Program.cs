@@ -28,14 +28,6 @@ namespace QOTD_Bot
 
             configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
             
-            /*
-            configData.Token = Environment.GetEnvironmentVariable("token");
-            configData.ChannelId = ulong.Parse(Environment.GetEnvironmentVariable("channelId"));
-            configData.GuildId = ulong.Parse(Environment.GetEnvironmentVariable("guildId"));
-            configData.Hour = int.Parse(Environment.GetEnvironmentVariable("hour"));
-            configData.Minute = int.Parse(Environment.GetEnvironmentVariable("minute"));
-            configData.ModChannelId = ulong.Parse(Environment.GetEnvironmentVariable("modChannelId"));*/
-            
             Console.WriteLine($"Bot Token: {configData.Token}.");
             Console.WriteLine($"Id of the Server: {configData.GuildId}.");
             Console.WriteLine($"Id of the Channel: {configData.ChannelId}.");
