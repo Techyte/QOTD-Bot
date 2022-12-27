@@ -112,32 +112,56 @@ public class CommandsManager
 
     private void ChangeTimeHour(int newHour)
     {
+        Console.WriteLine($"New hour is: {newHour}");
         _program.configData.Hour = newHour;
     }
 
     private void ChangeTimeMinute(int newMinute)
     {
+        Console.WriteLine($"New minute is: {newMinute}");
         _program.configData.Minute = newMinute;
     }
 
     private void ReadoutQuestions()
     {
-        Console.WriteLine("All questions:");
-        foreach (var question in _questionManager.possibleQuestions.Values)
+        if (_questionManager.possibleQuestions.Count > 0)
         {
-            Console.WriteLine($"Question from {question.Author.Username}: {question.Content}");
+            Console.WriteLine($"All {_questionManager.possibleQuestions.Count} Question(s):");
+            foreach (var question in _questionManager.possibleQuestions.Values)
+            {
+                Console.WriteLine($"Question from {question.Author.Username}: {question.Content}");
+            }   
+        }
+        else
+        {
+            Console.WriteLine("No Questions");
         }
     }
 
     private void ReadoutQuestions(string author)
     {
         Console.WriteLine($"All questions from {author}:");
+
+        List<DiscordMessage> messages = new List<DiscordMessage>();
+
         foreach (var question in _questionManager.possibleQuestions.Values)
         {
             if (question.Author.Username == author)
             {
+                messages.Add(question);
+            }
+        }
+
+        if (messages.Count > 0)
+        {
+            foreach (var question in messages)
+            {
                 Console.WriteLine($"Question: {question.Content}");   
             }
+        }
+        else
+        {
+            Console.WriteLine($"No questions from {author}");
         }
     }
 
@@ -154,7 +178,7 @@ public class CommandsManager
             }
             else
             {
-                Console.WriteLine("Could not find the channe;");
+                Console.WriteLine("Could not find the channel");
             }
         }
         else

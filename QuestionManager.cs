@@ -49,12 +49,12 @@ public class QuestionManager
 
         if (message != null)
         {
-            Console.WriteLine($"Removing the question sent by {message.Author.Username}: '{message.Content}'");
             if (!quiet)
             {
                 message.RespondAsync(
                     "This question was removed by a moderator because it was deemed to be to inappropriate or not haha funny");   
             }
+            Console.WriteLine($"Removed the question sent by {message.Author.Username}: '{message.Content}'");
             message.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
             possibleQuestions.Remove(message.Id);
         }
