@@ -25,3 +25,7 @@ List of current commands:
 - '-stop', stops the program and turns off the bot
 - '-sendmod', sends a message with the content of what you give it to the mod channel
 - '-readout', prints out every current possible question plus who asked it
+- '-changeTimeHour', changes the hour that the question will be asked to what you provide (24 hour time)
+- '-changeTimeMinute', changes the minute that the question will be asked at
+- '-askQuestion', asks the question imedeatly 
+- '-resetTime', resets any changes to the time that the question will be asked
