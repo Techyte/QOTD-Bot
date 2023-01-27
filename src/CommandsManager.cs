@@ -6,8 +6,13 @@ using DSharpPlus.Entities;
 
 public class CommandsManager
 {
-
+    /// <summary>
+    /// The reference to the program that is managing this question manager
+    /// </summary>
     private Program _program;
+    /// <summary>
+    /// The reference to the question manager that the commands manager is using
+    /// </summary>
     private QuestionManager _questionManager;
 
     public bool needToStop;
@@ -100,6 +105,9 @@ public class CommandsManager
         }
     }
 
+    /// <summary>
+    /// Resets the time that the question will be asked back to what is in the config file
+    /// </summary>
     private void ResetTime()
     {
         var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
@@ -112,18 +120,29 @@ public class CommandsManager
         Console.WriteLine("Any changes to the time the bot will go off at have been cleared");
     }
 
+    /// <summary>
+    /// Changes the hour that the question will be asked at newHour (24 hour time)
+    /// </summary>
+    /// <param name="newHour">The hour to change the time too</param>
     private void ChangeTimeHour(int newHour)
     {
         Console.WriteLine($"New hour is: {newHour}");
         _program.configData.Hour = newHour;
     }
 
+    /// <summary>
+    /// Changes the minute that the question will be asked at newHour (24 hour time)
+    /// </summary>
+    /// <param name="newMinute">The minute to change the time too</param>
     private void ChangeTimeMinute(int newMinute)
     {
         Console.WriteLine($"New minute is: {newMinute}");
         _program.configData.Minute = newMinute;
     }
 
+    /// <summary>
+    /// Reads out the questions that are yet to be asked
+    /// </summary>
     private void ReadoutQuestions()
     {
         if (_questionManager.possibleQuestions.Count > 0)
@@ -140,6 +159,10 @@ public class CommandsManager
         }
     }
 
+    /// <summary>
+    /// Reads out the questions submitted by the user with the same username as what you provide
+    /// </summary>
+    /// <param name="author">The name of the user</param>
     private void ReadoutQuestions(string author)
     {
         Console.WriteLine($"All questions from {author}:");
@@ -167,6 +190,10 @@ public class CommandsManager
         }
     }
 
+    /// <summary>
+    /// Sends a mod message
+    /// </summary>
+    /// <param name="message">The message that you want to send</param>
     private void SendModMessage(string message)
     {
         if (_program.discord.Guilds.TryGetValue(_program.configData.GuildId,
@@ -189,12 +216,18 @@ public class CommandsManager
         }
     }
 
+    /// <summary>
+    /// Stops the bot
+    /// </summary>
     private void Stop()
     {
         Console.WriteLine("Stopping");
         needToStop = true;
     }
 
+    /// <summary>
+    /// Reads out the time the question will be asked at
+    /// </summary>
     private void TimeDebug()
     {
         Console.WriteLine($"Target Hour: {_program.configData.Hour}. Current Hour: {DateTime.Now.Hour}");

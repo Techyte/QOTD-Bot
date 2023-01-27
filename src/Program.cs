@@ -5,17 +5,38 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace QOTD_Bot
 {
+    /// <summary>
+    /// Main class that manages the bot
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// The main Instance of the program class
+        /// </summary>
         public static Program Instance;
         
+        /// <summary>
+        /// The discord client that the bot uses
+        /// </summary>
         public DiscordClient discord;
         
+        /// <summary>
+        /// The configuration data that the bot uses
+        /// </summary>
         public ConfigData configData;
 
+        /// <summary>
+        /// The question manager that is currently in use
+        /// </summary>
         public QuestionManager _questionManager;
+        /// <summary>
+        /// The commands manager that is currently in use
+        /// </summary>
         public CommandsManager _commandsManager;
 
+        /// <summary>
+        /// The entry point of the bot
+        /// </summary>
         static void Main()
         {
             Program program = new Program();
@@ -23,6 +44,9 @@ namespace QOTD_Bot
             program.Start();
         }
 
+        /// <summary>
+        /// The constructor that the bot uses for the main program class
+        /// </summary>
         private Program()
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
@@ -42,12 +66,17 @@ namespace QOTD_Bot
             _commandsManager = new CommandsManager(this);
         }
 
+        /// <summary>
+        /// The function that starts the bot after it has been configured
+        /// </summary>
         private void Start()
         {
-            
             MainAsync().GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// The function that starts the bot
+        /// </summary>
         private async Task MainAsync()
         {
             discord = new DiscordClient(new DiscordConfiguration()
@@ -91,17 +120,47 @@ namespace QOTD_Bot
         }
     }
 
+    /// <summary>
+    /// The class that contains configuration data for the bot
+    /// </summary>
     public class ConfigData
     {
-        public string Token;
-        public ulong GuildId;
-        public ulong ChannelId;
-        public ulong ModChannelId;
+        /// <summary>
+        /// The token of the discord bot that the program uses
+        /// </summary>
+        public readonly string Token;
+        /// <summary>
+        /// The id of the server the bot sends the message into
+        /// </summary>
+        public readonly ulong GuildId;
+        /// <summary>
+        /// The id of the channel the bot sends the message into
+        /// </summary>
+        public readonly ulong ChannelId;
+        /// <summary>
+        /// The id of the channel the bot sends mod messages into
+        /// </summary>
+        public readonly ulong ModChannelId;
+        /// <summary>
+        /// The hour that the bot will ask the question at
+        /// </summary>
         public int Hour;
+        /// <summary>
+        /// The minute that the bot will ask the question at
+        /// </summary>
         public int Minute;
-        public bool allowReadout;
-        public bool allowTimeModifications;
-        public bool allowRemovals;
+        /// <summary>
+        /// Does the bot allow people to readout the current questions
+        /// </summary>
+        public readonly bool AllowReadout;
+        /// <summary>
+        /// Does the bot allow people to modify the time the bot will ask a question
+        /// </summary>
+        public readonly bool AllowTimeModifications;
+        /// <summary>
+        /// Does the bot allow people to remove questions
+        /// </summary>
+        public readonly bool AllowRemovals;
 
         public ConfigData()
         {
@@ -111,9 +170,9 @@ namespace QOTD_Bot
             ModChannelId = 0;
             Hour = 0;
             Minute = 0;
-            allowReadout = false;
-            allowTimeModifications = false;
-            allowRemovals = false;
+            AllowReadout = false;
+            AllowTimeModifications = false;
+            AllowRemovals = false;
         }
     }
 }

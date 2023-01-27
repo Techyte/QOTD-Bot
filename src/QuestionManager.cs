@@ -6,8 +6,14 @@ using DSharpPlus.EventArgs;
 
 public class QuestionManager
 {
+    /// <summary>
+    /// The dictionary that holds the list of current questions accessed via their message id
+    /// </summary>
     public Dictionary<ulong, DiscordMessage> possibleQuestions;
 
+    /// <summary>
+    /// The reference to the program that is managing this question manager
+    /// </summary>
     private Program _program;
 
     public bool wasForcesSpec;
@@ -21,6 +27,9 @@ public class QuestionManager
         _program = program;
     }
 
+    /// <summary>
+    /// Starts the timer that checks every minute if its time to ask the question
+    /// </summary>
     public void StartTimer()
     {
         // The timer that checks every minute to see if it is time to ask the question
@@ -35,6 +44,11 @@ public class QuestionManager
         aTimer.Enabled = true;
     }
 
+    /// <summary>
+    /// Removes the question with the same content as questionContent
+    /// </summary>
+    /// <param name="questionContent">The content of the message that you want to delete</param>
+    /// <param name="quiet">Whether the removal should be quiet</param>
     public void RemoveQuestion(string questionContent, bool quiet)
     {
         DiscordMessage message = null;
@@ -64,7 +78,6 @@ public class QuestionManager
         }
     }
 
-    // Run when a question is deleted in a DM
     public void QuestionDeleted(MessageDeleteEventArgs e)
     {
         if (!e.Message.Author.IsBot)
@@ -74,7 +87,6 @@ public class QuestionManager
         }
     }
 
-    // Run when a question is asked in a DM
     public void QuestionAsked(MessageCreateEventArgs e)
     {
         if (!e.Message.Author.IsBot)
@@ -85,7 +97,6 @@ public class QuestionManager
         }
     }
 
-    // Checks if it is time to ask the question
     private void CheckIfTime(DiscordClient discord)
     {
         DateTime time = DateTime.Now;
@@ -96,13 +107,19 @@ public class QuestionManager
         }
     }
 
+    /// <summary>
+    /// Forces the question to be asked
+    /// </summary>
     public void ForceAskQuestion()
     {
         AskQuestion(_program.discord);
         hasAsked = true;
     }
     
-    // Asks the question
+    /// <summary>
+    /// Asks the question
+    /// </summary>
+    /// <param name="discord">The client that the question will be askedd from</param>
     private void AskQuestion(DiscordClient discord)
     {
         if(!hasAsked)
