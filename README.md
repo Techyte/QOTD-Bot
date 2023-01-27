@@ -16,16 +16,32 @@ Wrote a whole nice README and it got deleted so here is the jist of it:
 
 List of current commands:
 
-- '-cut', removes a question based with the same content as the text you give it, notifys the person that asked the question
-- '-quietcut', same as -cut but does not notify the person that asked the question
-- '-forcegen', forces the next question to be the text you give it
-- '-forcespec', forces the next question to be a with the same content as the text you give it, notifys the person that asked the question
-- '-clearforce', clears forced question and uses a regular random question
-- '-timedebug', prints out the target time to ask the question and the current time
-- '-stop', stops the program and turns off the bot
-- '-sendmod', sends a message with the content of what you give it to the mod channel
-- '-readout', prints out every current possible question plus who asked it
-- '-changeTimeHour', changes the hour that the question will be asked to what you provide (24 hour time)
-- '-changeTimeMinute', changes the minute that the question will be asked at
-- '-askQuestion', asks the question imedeatly 
-- '-resetTime', resets any changes to the time that the question will be asked
+- 'remove', removes a question based with the same content as the text you give it, notifys the person that asked the question
+- 'quietRemove', same as 'cut' but does not notify the person that asked the question
+- 'removeAllBy', removes all the questions asked by the person you provide
+- 'forceGen', forces the next question to be the text you give it
+- 'forceSpec', forces the next question to be a with the same content as the text you give it, notifys the person that asked the question
+- 'clearForce', clears forced question and uses a regular random question
+- 'timeDebug', prints out the target time to ask the question and the current time
+- 'stop', stops the program and turns off the bot
+- 'sendMod', sends a message with the content of what you give it to the mod channel
+- 'readout', prints out every current possible question plus who asked it
+- 'changeTimeHour', changes the hour that the question will be asked to what you provide (24 hour time)
+- 'changeTimeMinute', changes the minute that the question will be asked at
+- 'askQuestion', asks the question imedeatly 
+- 'resetTime', resets any changes to the time that the question will be asked
+
+List of commands that can be run through Discord:
+
+- '!readout', displays out every current possible question plus who asked it
+- '!remove', removed the question with the same content as what you give it, notifys the person that asked it
+- '!quietRemove', removes the question with the same content as what you give it without notifying the person that asked it
+- '!removeAllBy', removes all question submitted by the user you provide
+- '!timeDebug', displays the time that the bot will ask the question
+- '!changeTimeHour', changes the hour the bot will ask the question at
+- '!changeTimeMinute', changes the minute the bot will ask the question at
+- '!resetTime', resets any modifications to the time the bot will ask the question at
+- '!stop', stops the bot
+- '!askQuestion', forces the bot to ask the question
+- '!info', displays information about the bot
+- '!commandList', displays the list of possible commands
