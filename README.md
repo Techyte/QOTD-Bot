@@ -1,5 +1,7 @@
 # QOTD Discord Bot
  
+ THIS README IS UP TO DATE AS OF QOTD v1.4
+ 
 Wrote a whole nice README and it got deleted so here is the jist of it:
 
 - Use this howver you want (See LICENCE for more details)
