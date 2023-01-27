@@ -4,3 +4,6 @@ channelId: channel-id-here
 modChannelId: mod-channel-id-here
 hour: 12
 minute: 00
+allowReadout: false
+allowTimeModifications: false
+allowRemovals: false
