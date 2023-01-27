@@ -1,23 +1,29 @@
-# QOTD Discord Bot
+<div align="center">
+  <a href="https://github.com/RiptideNetworking/Riptide">
+    <img src="QOTD_logo.png" width="150px" height="auto">
+  </a>
+</div>
+<div align="center"></div>
+<h1 align="center">QOTD Discord Bot</h1>
  
- THIS README IS UP TO DATE AS OF QOTD v1.4
+ This readme is up to date as of QOTD v1.4
  
-Wrote a whole nice README and it got deleted so here is the jist of it:
+## Summary
 
-- Use this howver you want (See LICENCE for more details)
+- This is distrubuted under the MIT Licence
 - You DM the bot to give it a question
 - Delete a message to remove it from the bots list of questions
 - Fully modular command system (operated from the console)
-- You need to set up the config file with stuff like the bot token, server id, channel id and the time you want the questions to be asked (config.yaml, see the demo), this config file must be located in the same location as the exe that runs the bot
-- You will need a discord application to use this, set one up here: https://discord.com/developers/applications
+- You need to set up the config file with stuff like the bot token, server id, channel id, etc. (config.yaml, see the demo), this config file must be located in the same location as the exe that runs the bot
+- You will need a discord application to use this, set one up here: [Discord Developer Portal](https://discord.com/developers/applications)
 - The current release is only for windows but you should be able to download the source and then build it for your specific OS
 - I don't provide a way of hosting but if you want a suggestion I am using AWS EC2 Windows 10 Instance
-- If you care enough I am using DSharpPlus to make this (the dlls should be included with the source code)
+- I am using DSharpPlus to make this (the dlls should be included with the source code)
 - If you need any help with anything email me at contact@techyte.net
 
-List of current commands:
+## List of current commands:
 
-- 'remove', removes a question based with the same content as the text you give it, notifys the person that asked the question
+- 'remove', removes a question with the same content as the text you give it, notifys the person that asked the question
 - 'quietRemove', same as 'cut' but does not notify the person that asked the question
 - 'removeAllBy', removes all the questions asked by the person you provide
 - 'forceGen', forces the next question to be the text you give it
@@ -32,7 +38,7 @@ List of current commands:
 - 'askQuestion', asks the question imedeatly 
 - 'resetTime', resets any changes to the time that the question will be asked
 
-List of commands that can be run through Discord:
+## List of commands that can be run through Discord:
 
 - '!readout', displays out every current possible question plus who asked it
 - '!remove', removed the question with the same content as what you give it, notifys the person that asked it
