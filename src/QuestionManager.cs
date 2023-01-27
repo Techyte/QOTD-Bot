@@ -107,7 +107,6 @@ public class QuestionManager
     {
         if(!hasAsked)
         {
-
             if (discord.Guilds.TryGetValue(_program.configData.GuildId, out DiscordGuild guild))
             {
                 if (guild.Channels.TryGetValue(_program.configData.ChannelId, out DiscordChannel channel))

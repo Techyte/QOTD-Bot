@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -6,16 +7,20 @@ namespace QOTD_Bot
 {
     public class Program
     {
+        public static Program Instance;
+        
         public DiscordClient discord;
         
         public ConfigData configData;
 
         public QuestionManager _questionManager;
-        private CommandsManager _commandsManager;
-        
+        public CommandsManager _commandsManager;
+
         static void Main()
         {
             Program program = new Program();
+            Instance = program;
+            program.Start();
         }
 
         private Program()
@@ -35,6 +40,10 @@ namespace QOTD_Bot
 
             _questionManager = new QuestionManager(this);
             _commandsManager = new CommandsManager(this);
+        }
+
+        private void Start()
+        {
             
             MainAsync().GetAwaiter().GetResult();
         }
@@ -47,6 +56,13 @@ namespace QOTD_Bot
                 TokenType = TokenType.Bot,
                 MinimumLogLevel = LogLevel.None
             });
+            
+            var commands = discord.UseCommandsNext(new CommandsNextConfiguration()
+            { 
+                StringPrefixes = new[] { "!" }
+            });
+
+            commands.RegisterCommands<DiscordCommands>();
 
             discord.MessageCreated += async (s, e) =>
             {
@@ -83,6 +99,9 @@ namespace QOTD_Bot
         public ulong ModChannelId;
         public int Hour;
         public int Minute;
+        public bool allowReadout;
+        public bool allowTimeModifications;
+        public bool allowRemovals;
 
         public ConfigData()
         {
@@ -92,6 +111,9 @@ namespace QOTD_Bot
             ModChannelId = 0;
             Hour = 0;
             Minute = 0;
+            allowReadout = false;
+            allowTimeModifications = false;
+            allowRemovals = false;
         }
     }
 }

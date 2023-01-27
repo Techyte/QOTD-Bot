@@ -10,7 +10,7 @@ public class CommandsManager
     private Program _program;
     private QuestionManager _questionManager;
 
-    private bool needToStop;
+    public bool needToStop;
     
     public CommandsManager(Program program)
     {
@@ -48,28 +48,28 @@ public class CommandsManager
     {
         switch (command)
         {
-            case "-quietcut":
+            case "-quietCut":
                 _questionManager.RemoveQuestion(content, true);
                 break;
-            case "-cut":
+            case "-remove":
                 _questionManager.RemoveQuestion(content, false);
                 break;
-            case "-forcegen":
+            case "-forceGen":
                 ForceGeneric(content);
                 break;
-            case "-forcespec":
+            case "-forceSpec":
                 ForceSpecific(content);
                 break;
-            case "-clearforce":
+            case "-clearForce":
                 ClearForced();
                 break;
-            case "-timedebug":
+            case "-timeDebug":
                 TimeDebug();
                 break;
             case "-stop":
                 Stop();
                 break;
-            case "-sendmod":
+            case "-sendMod":
                 SendModMessage(content);
                 break;
             case "-readout":
@@ -94,7 +94,8 @@ public class CommandsManager
             case "-askQuestion":
                 _questionManager.ForceAskQuestion();
                 break;
-            case "-resetTme":
+            case "-resetTime":
+                ResetTime();
                 break;
         }
     }
@@ -108,6 +109,7 @@ public class CommandsManager
         string path = Environment.GetEnvironmentVariable("QOTD-Config-Location");
 
         _program.configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
+        Console.WriteLine("Any changes to the time the bot will go off at have been cleared");
     }
 
     private void ChangeTimeHour(int newHour)
