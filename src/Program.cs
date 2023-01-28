@@ -134,8 +134,8 @@ namespace QOTD_Bot
             Console.WriteLine($"Id of the Server: {configData.GuildId}.");
             Console.WriteLine($"Id of the Channel: {configData.ChannelId}.");
             Console.WriteLine($"Question will be asked at {configData.Hour}:{configData.Minute} o'clock.");
-            string willSendNoQuestionMessage = configData.SendNoQuestionMessage ? String.Empty : "not";
-            Console.WriteLine($"We will {willSendNoQuestionMessage} send a message when there are not questions");
+            string willSendNoQuestionMessage = configData.SendNoQuestionMessage ? String.Empty : "not ";
+            Console.WriteLine($"We will {willSendNoQuestionMessage}send a message when there are not questions");
             Console.WriteLine($"Readout command required permission: {configData.ReadoutPermission}");
             Console.WriteLine($"Time modification commands required permission: {configData.TimeModificationPermission}");
             Console.WriteLine($"Removal commands required permission: {configData.RemovalPermission}");
