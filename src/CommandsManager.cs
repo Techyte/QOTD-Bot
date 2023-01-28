@@ -98,7 +98,15 @@ public class CommandsManager
             case "resetTime":
                 ResetTime();
                 break;
+            case "reloadConfig":
+                ReloadConfig();
+                break;
         }
+    }
+
+    private void ReloadConfig()
+    {
+        _program.ReloadConfigInformation();
     }
 
     private void RemoveAllBy(string username)

@@ -57,10 +57,7 @@ namespace QOTD_Bot
 
             configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
             
-            Console.WriteLine($"Bot Token: {configData.Token}.");
-            Console.WriteLine($"Id of the Server: {configData.GuildId}.");
-            Console.WriteLine($"Id of the Channel: {configData.ChannelId}.");
-            Console.WriteLine($"Question will be asked at {configData.Hour}:{configData.Minute} o'clock.");
+            ReadoutConfigData();
 
             _questionManager = new QuestionManager(this);
             _commandsManager = new CommandsManager(this);
@@ -117,6 +114,33 @@ namespace QOTD_Bot
             await discord.ConnectAsync();
             
             _commandsManager.CommandCycle();
+        }
+    
+        public void ReloadConfigInformation()
+        {
+            var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
+                .Build();
+
+            string path = Directory.GetCurrentDirectory()+@"\config.yaml";
+
+            configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
+            ReadoutConfigData();
+        }
+
+        private void ReadoutConfigData()
+        {
+            Console.WriteLine($"Bot Token: {configData.Token}.");
+            Console.WriteLine($"Id of the Server: {configData.GuildId}.");
+            Console.WriteLine($"Id of the Channel: {configData.ChannelId}.");
+            Console.WriteLine($"Question will be asked at {configData.Hour}:{configData.Minute} o'clock.");
+            string willSendNoQuestionMessage = configData.SendNoQuestionMessage ? String.Empty : "not";
+            Console.WriteLine($"We will {willSendNoQuestionMessage} send a message when there are not questions");
+            Console.WriteLine($"Readout command required permission: {configData.ReadoutPermission}");
+            Console.WriteLine($"Time modification commands required permission: {configData.TimeModificationPermission}");
+            Console.WriteLine($"Removal commands required permission: {configData.RemovalPermission}");
+            Console.WriteLine($"Stop command required permission: {configData.StopPermission}");
+            Console.WriteLine($"Ask Question command required permission: {configData.AskQuestionPermission}");
         }
     }
 
