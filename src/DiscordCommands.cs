@@ -226,7 +226,7 @@ public class DiscordCommands : BaseCommandModule
         await ctx.RespondAsync("**The QOTD Bot!**\n\n"+
                                "DM me to ask a question\n"+
                                "Questions will be asked once a day in the dedicated QOTD channel\n"+
-                               "For a list of other commands use !commandList\n"+
+                               "For a list of all commands, use !commandList\n"+
                                "To learn more specifics and how to set me up in your own server check out the github page:https://github.com/Techyte/QOTD-Bot\n\n"+
                                "*Created By Techyte*");
     }
@@ -246,22 +246,31 @@ public class DiscordCommands : BaseCommandModule
 
         string allowRemovals = (ctx.Member?.Permissions & _program.configData.RemovalPermission) != 0
             ? "!remove: Removes the question with the same content as what you give it\n"+
-              "!quietRemove: Removes the question with the same content as what you give it without telling the person that asked it"+
-              "!removeAllBy: Removes all questions submitted by the user you provide"
+              "!quietRemove: Removes the question with the same content as what you give it without telling the person that asked it\n"+
+              "!removeAllBy: Removes all questions submitted by the user you provide\n"
             : string.Empty;
+
+        string allowStop = (ctx.Member?.Permissions & _program.configData.StopPermission) != 0
+            ? "!stop: Stops the bot\n"
+            : String.Empty;
+
+        string allowAsk = (ctx.Member?.Permissions & _program.configData.AskQuestionPermission) != 0
+            ? "!askQuestion: Forces the bot to ask a question\n"
+            : String.Empty;
         
         await ctx.RespondAsync(
             "List of all commands that you can use:\n\n"+
             allowReadouts+
                                allowTimeModifications+
                                allowRemovals+
-                               "!stop: Stops the bot (requires admin privileges)\n"+
+                               allowStop+
+                               allowAsk+
                                "!info: Provides information about the bot\n"+
-                               "!askQuestion: Forces the bot to ask the question (requires moderate members privileges)");
+                               "!commandList: Reads out all commands that the person that used it can use");
     }
 
     private void NotAllowedToPerformAction(CommandContext ctx)
     {
-        ctx.RespondAsync("Time modifications are not permitted on this server");
+        ctx.RespondAsync("You do not have permission to perform this action");
     }
 }
