@@ -6,7 +6,7 @@
 <div align="center"></div>
 <h1 align="center">QOTD Discord Bot</h1>
  
- This readme is up to date as of QOTD v1.4
+ This readme is up to date as of QOTD v1.4.1
  
 ## Summary
 
@@ -15,6 +15,7 @@
 - Delete a message to remove it from the bots list of questions
 - Fully modular command system (operated from the console)
 - You need to set up the config file with stuff like the bot token, server id, channel id, etc. (config.yaml, see the demo), this config file must be located in the same location as the exe that runs the bot
+- For command privleges and how to set them in the config file you should look at this page on [DSharpPlus Discord Permissions](https://dsharpplus.github.io/api/DSharpPlus.Permissions.html?q=Permissions.Administrator)
 - You will need a discord application to use this, set one up here: [Discord Developer Portal](https://discord.com/developers/applications)
 - The current release is only for windows but you should be able to download the source and then build it for your specific OS
 - I don't provide a way of hosting but if you want a suggestion I am using AWS EC2 Windows 10 Instance
