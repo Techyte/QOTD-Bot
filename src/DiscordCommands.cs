@@ -12,7 +12,6 @@ public class DiscordCommands : BaseCommandModule
     
     public DiscordCommands()
     {
-        Console.WriteLine(Program.Instance);
         _questionManager = Program.Instance._questionManager;
         _program = Program.Instance;
     }
@@ -20,7 +19,7 @@ public class DiscordCommands : BaseCommandModule
     [Command("readout")]
     public async Task Readout(CommandContext ctx)
     {
-        if(_program.configData.AllowReadout)
+        if((ctx.Member?.Permissions & _program.configData.ReadoutPermission) != 0)
         {
             Console.WriteLine("Reading out questions");
             await ctx.Channel.SendMessageAsync(
@@ -37,14 +36,14 @@ public class DiscordCommands : BaseCommandModule
         }
         else
         {
-            await ctx.RespondAsync("Readouts are not permitted on this server");
+            NotAllowedToPerformAction(ctx);
         }
     }
 
     [Command("remove")]
     public async Task Remove(CommandContext ctx, string text)
     {
-        if(_program.configData.AllowRemovals)
+        if((ctx.Member?.Permissions & _program.configData.RemovalPermission) != 0)
         {
             DiscordMessage message = null;
 
@@ -71,7 +70,70 @@ public class DiscordCommands : BaseCommandModule
         }
         else
         {
-            await ctx.RespondAsync("Removals are not permitted on this server");
+            NotAllowedToPerformAction(ctx);
+        }
+    }
+
+    [Command("quietRemove")]
+    public async Task QuietRemove(CommandContext ctx, string text)
+    {
+        if((ctx.Member?.Permissions & _program.configData.RemovalPermission) != 0)
+        {
+            DiscordMessage message = null;
+
+            foreach (var question in _questionManager.possibleQuestions.Values)
+            {
+                if (question.Content == text)
+                {
+                    message = question;
+                }
+            }
+
+            if (message != null)
+            {
+                await ctx.RespondAsync($"Removed the question sent by {message.Author.Username}: '{message.Content}'");
+                await message.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
+                _questionManager.possibleQuestions.Remove(message.Id);
+            }
+            else
+            {
+                await ctx.RespondAsync($"Could not remove the question '{text}' because it could not be found");
+            }
+        }
+        else
+        {
+            NotAllowedToPerformAction(ctx);
+        }
+    }
+
+    [Command("removeAllBy")]
+    public async Task RemoveAllBy(CommandContext ctx, string text)
+    {
+        if((ctx.Member?.Permissions & _program.configData.RemovalPermission) != 0)
+        {
+            List<DiscordMessage> questions = new List<DiscordMessage>();
+
+            await ctx.RespondAsync($"Removing all questions submitted by {text}");
+            foreach (var question in _questionManager.possibleQuestions.Values)
+            {
+                if (question.Author.Username == text)
+                {
+                    questions.Add(question);
+                }
+            }
+
+            foreach (var question in questions)
+            {
+                await question.RespondAsync(
+                    "This question was removed by a moderator because it was deemed to be to inappropriate or not haha funny");
+                await ctx.RespondAsync($"Removed the question sent by {question.Author.Username}: '{question.Content}'");
+                await question.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
+                _questionManager.possibleQuestions.Remove(question.Id);
+            }
+        }
+        else
+        {
+            NotAllowedToPerformAction(ctx);
         }
     }
 
@@ -86,35 +148,35 @@ public class DiscordCommands : BaseCommandModule
     [Command("changeTimeHour")]
     public async Task ChangeTimeHour(CommandContext ctx, string text)
     {
-        if(_program.configData.AllowTimeModifications)
+        if((ctx.Member?.Permissions & _program.configData.TimeModificationPermission) != 0)
         {
             await ctx.RespondAsync($"New hour is: {text}");
             _program.configData.Hour = int.Parse(text);
         }
         else
         {
-            await ctx.RespondAsync("Time modifications are not permitted on this server");
+            NotAllowedToPerformAction(ctx);
         }
     }
 
     [Command("changeTimeMinute")]
     public async Task ChangeTimeMinute(CommandContext ctx, string text)
     {
-        if (_program.configData.AllowTimeModifications)
+        if ((ctx.Member?.Permissions & _program.configData.TimeModificationPermission) != 0)
         {
             await ctx.RespondAsync($"New minute is: {text}");
             _program.configData.Minute = int.Parse(text);   
         }
         else
         {
-            await ctx.RespondAsync("Time modifications are not permitted on this server");
+            NotAllowedToPerformAction(ctx);
         }
     }
 
     [Command("resetTime")]
     public async Task ResetTime(CommandContext ctx)
     {
-        if(_program.configData.AllowTimeModifications)
+        if((ctx.Member?.Permissions & _program.configData.TimeModificationPermission) != 0)
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -127,26 +189,34 @@ public class DiscordCommands : BaseCommandModule
         }
         else
         {
-            await ctx.RespondAsync("Time modifications are not permitted on this server");
+            NotAllowedToPerformAction(ctx);
         }
     }
 
     [Command("stop")]
     public async Task Stop(CommandContext ctx)
     {
-        if ((ctx.Member.Permissions & Permissions.Administrator) != 0)
+        if ((ctx.Member?.Permissions & _program.configData.StopPermission) != 0)
         {
             await ctx.RespondAsync("Stopping");
-            _program._commandsManager.needToStop = true;
+            Environment.Exit(0);
+        }
+        else
+        {
+            NotAllowedToPerformAction(ctx);
         }
     }
 
     [Command("askQuestion")]
     public async Task askQuestion(CommandContext ctx)
     {
-        if ((ctx.Member.Permissions & Permissions.ModerateMembers) != 0)
+        if ((ctx.Member?.Permissions & _program.configData.AskQuestionPermission) != 0)
         {
             _program._questionManager.ForceAskQuestion();
+        }
+        else
+        {
+            NotAllowedToPerformAction(ctx);
         }
     }
 
@@ -164,27 +234,34 @@ public class DiscordCommands : BaseCommandModule
     [Command("commandList")]
     public async Task CommandList(CommandContext ctx)
     {
-        string allowReadouts = _program.configData.AllowReadout
+        string allowReadouts = (ctx.Member?.Permissions & _program.configData.ReadoutPermission) != 0
             ? "!readout: Reads out all of the questions yet to be asked\n"
             : string.Empty;
 
-        string allowTimeModifications = _program.configData.AllowTimeModifications
+        string allowTimeModifications = (ctx.Member?.Permissions & _program.configData.TimeModificationPermission) != 0
             ? "!changeTimeHour: Changes the hour that the question will be asked at (24 hour time)\n" +
               "!changeTimeMinute: Changes the minute that the question will be asked at\n"+
               "!resetTime: Clears any changes made to the time that the question will be asked at\n"
             : string.Empty;
 
-        string allowRemovals = _program.configData.AllowRemovals
-            ? "!remove: Removes the question with the same content as what you give it\n"
+        string allowRemovals = (ctx.Member?.Permissions & _program.configData.RemovalPermission) != 0
+            ? "!remove: Removes the question with the same content as what you give it\n"+
+              "!quietRemove: Removes the question with the same content as what you give it without telling the person that asked it"+
+              "!removeAllBy: Removes all questions submitted by the user you provide"
             : string.Empty;
         
         await ctx.RespondAsync(
-            "List of all commands allowed by the bots current settings:\n\n"+
+            "List of all commands that you can use:\n\n"+
             allowReadouts+
                                allowTimeModifications+
                                allowRemovals+
                                "!stop: Stops the bot (requires admin privileges)\n"+
                                "!info: Provides information about the bot\n"+
                                "!askQuestion: Forces the bot to ask the question (requires moderate members privileges)");
+    }
+
+    private void NotAllowedToPerformAction(CommandContext ctx)
+    {
+        ctx.RespondAsync("Time modifications are not permitted on this server");
     }
 }

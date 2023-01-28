@@ -83,7 +83,7 @@ public class QuestionManager
         if (!e.Message.Author.IsBot)
         {
             possibleQuestions.Remove(e.Message.Id);
-            Console.WriteLine($"Question from {e.Message.Author} removed: {e.Message.Content}.");
+            Console.WriteLine($"Question from {e.Message.Author.Username} removed: {e.Message.Content}.");
         }
     }
 
@@ -130,7 +130,10 @@ public class QuestionManager
                 {
                     if (possibleQuestions.Count == 0)
                     {
-                        channel.SendMessageAsync("There are no questions to be asked");
+                        if(_program.configData.SendNoQuestionMessage)
+                        {
+                            channel.SendMessageAsync("There are no questions to be asked");
+                        }
                         return;
                     }
                     
@@ -145,7 +148,7 @@ public class QuestionManager
                         if (possibleQuestions.TryGetValue(IdList[randomId], out message))
                         {
                             DiscordMessage questionMessage = channel
-                                .SendMessageAsync($"Question of the day is: {message.Content}").GetAwaiter()
+                                .SendMessageAsync(message.Content).GetAwaiter()
                                 .GetResult();
 
                             message.CreateReactionAsync(DiscordEmoji.FromUnicode("✔"));

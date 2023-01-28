@@ -50,10 +50,10 @@ namespace QOTD_Bot
         private Program()
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
-                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithNamingConvention(PascalCaseNamingConvention.Instance)
                 .Build();
 
-            string path = Environment.GetEnvironmentVariable("QOTD-Config-Location");
+            string path = Directory.GetCurrentDirectory()+@"\config.yaml";
 
             configData = deserializer.Deserialize<ConfigData>(File.ReadAllText(path));
             
@@ -128,19 +128,19 @@ namespace QOTD_Bot
         /// <summary>
         /// The token of the discord bot that the program uses
         /// </summary>
-        public readonly string Token;
+        public string Token;
         /// <summary>
         /// The id of the server the bot sends the message into
         /// </summary>
-        public readonly ulong GuildId;
+        public ulong GuildId;
         /// <summary>
         /// The id of the channel the bot sends the message into
         /// </summary>
-        public readonly ulong ChannelId;
+        public ulong ChannelId;
         /// <summary>
         /// The id of the channel the bot sends mod messages into
         /// </summary>
-        public readonly ulong ModChannelId;
+        public ulong ModChannelId;
         /// <summary>
         /// The hour that the bot will ask the question at
         /// </summary>
@@ -150,17 +150,29 @@ namespace QOTD_Bot
         /// </summary>
         public int Minute;
         /// <summary>
-        /// Does the bot allow people to readout the current questions
+        /// Send a message when there are no questions to ask saying so
         /// </summary>
-        public readonly bool AllowReadout;
+        public bool SendNoQuestionMessage;
         /// <summary>
-        /// Does the bot allow people to modify the time the bot will ask a question
+        /// The required permission level for someone to run the readout command
         /// </summary>
-        public readonly bool AllowTimeModifications;
+        public Permissions ReadoutPermission;
         /// <summary>
-        /// Does the bot allow people to remove questions
+        /// The required permission level for someone to run time modification commands
         /// </summary>
-        public readonly bool AllowRemovals;
+        public Permissions TimeModificationPermission;
+        /// <summary>
+        /// The required permission level for someone to run removal commands
+        /// </summary>
+        public Permissions RemovalPermission;
+        /// <summary>
+        /// The required permission level for someone to run the stop command
+        /// </summary>
+        public Permissions StopPermission;
+        /// <summary>
+        /// The required permission level for someone to run the ask question command
+        /// </summary>
+        public Permissions AskQuestionPermission;
 
         public ConfigData()
         {
@@ -170,9 +182,12 @@ namespace QOTD_Bot
             ModChannelId = 0;
             Hour = 0;
             Minute = 0;
-            AllowReadout = false;
-            AllowTimeModifications = false;
-            AllowRemovals = false;
+            SendNoQuestionMessage = false;
+            ReadoutPermission = Permissions.All;
+            TimeModificationPermission = Permissions.All;
+            RemovalPermission = Permissions.All;
+            StopPermission = Permissions.All;
+            AskQuestionPermission = Permissions.All;
         }
     }
 }

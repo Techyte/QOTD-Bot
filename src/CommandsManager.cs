@@ -14,8 +14,6 @@ public class CommandsManager
     /// The reference to the question manager that the commands manager is using
     /// </summary>
     private QuestionManager _questionManager;
-
-    public bool needToStop;
     
     public CommandsManager(Program program)
     {
@@ -39,11 +37,6 @@ public class CommandsManager
             {
                 TestCommand(messageContent[0], string.Empty);
             }
-
-            if (needToStop)
-            {
-                return;
-            }
         }
 
         CommandCycle();
@@ -53,31 +46,34 @@ public class CommandsManager
     {
         switch (command)
         {
-            case "-quietCut":
+            case "quietRemove":
                 _questionManager.RemoveQuestion(content, true);
                 break;
-            case "-remove":
+            case "remove":
                 _questionManager.RemoveQuestion(content, false);
                 break;
-            case "-forceGen":
+            case "removeAllBy":
+                RemoveAllBy(content);
+                break;
+            case "forceGen":
                 ForceGeneric(content);
                 break;
-            case "-forceSpec":
+            case "forceSpec":
                 ForceSpecific(content);
                 break;
-            case "-clearForce":
+            case "clearForce":
                 ClearForced();
                 break;
-            case "-timeDebug":
+            case "timeDebug":
                 TimeDebug();
                 break;
-            case "-stop":
+            case "stop":
                 Stop();
                 break;
-            case "-sendMod":
+            case "sendMod":
                 SendModMessage(content);
                 break;
-            case "-readout":
+            case "readout":
                 if (string.IsNullOrEmpty(content))
                 {
                     ReadoutQuestions();   
@@ -87,21 +83,44 @@ public class CommandsManager
                     ReadoutQuestions(content);
                 }
                 break;
-            case "-clear":
+            case "clear":
                 Console.Clear();
                 break;
-            case "-changeTimeHour":
+            case "changeTimeHour":
                 ChangeTimeHour(int.Parse(content));
                 break;
-            case "-changeTimeMinute":
+            case "changeTimeMinute":
                 ChangeTimeMinute(int.Parse(content));
                 break;
-            case "-askQuestion":
+            case "askQuestion":
                 _questionManager.ForceAskQuestion();
                 break;
-            case "-resetTime":
+            case "resetTime":
                 ResetTime();
                 break;
+        }
+    }
+
+    private void RemoveAllBy(string username)
+    {
+        List<DiscordMessage> questions = new List<DiscordMessage>();
+
+        Console.WriteLine($"Removing all questions submitted by {username}");
+        foreach (var question in _questionManager.possibleQuestions.Values)
+        {
+            if (question.Author.Username == username)
+            {
+                questions.Add(question);
+            }
+        }
+
+        foreach (var question in questions)
+        {
+            question.RespondAsync(
+                "This question was removed by a moderator because it was deemed to be to inappropriate or not haha funny");
+            Console.WriteLine($"Removed the question sent by {question.Author.Username}: '{question.Content}'");
+            question.CreateReactionAsync(DiscordEmoji.FromUnicode("❌"));
+            _questionManager.possibleQuestions.Remove(question.Id);
         }
     }
 
@@ -222,7 +241,7 @@ public class CommandsManager
     private void Stop()
     {
         Console.WriteLine("Stopping");
-        needToStop = true;
+        Environment.Exit(0);
     }
 
     /// <summary>
