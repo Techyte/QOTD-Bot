@@ -4,6 +4,9 @@ channelId: channel-id-here
 modChannelId: mod-channel-id-here
 hour: 12
 minute: 00
-allowReadout: false
-allowTimeModifications: false
-allowRemovals: false
+SendNoQuestionMessage: false
+ReadoutPermission: ManageMessages
+TimeModificationPermission: Administrator
+RemovalPermission: Administrator
+StopPermission: Administrator
+AskQuestionPermission: Administrator
