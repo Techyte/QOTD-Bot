@@ -25,7 +25,7 @@
 ## List of current commands:
 
 - 'remove', removes a question with the same content as the text you give it, notifys the person that asked the question
-- 'quietRemove', same as 'cut' but does not notify the person that asked the question
+- 'quietRemove', same as 'remove' but does not notify the person that asked the question
 - 'removeAllBy', removes all the questions asked by the person you provide
 - 'forceGen', forces the next question to be the text you give it
 - 'forceSpec', forces the next question to be a with the same content as the text you give it, notifys the person that asked the question
